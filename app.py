@@ -34,7 +34,7 @@ parser = WebhookParser(channel_secret)
 
 def get_japan_time():
     jp = datetime.datetime.now(tz=pytz.timezone('Asia/Tokyo'))
-    jesse_date = jp.strftime('%Y-%m-%d %H:%M:%S')
+    jesse_date = jp.strftime('It is currently %b %d %Y at %H:%M:%S %p for Jesse.')
     return jesse_date
 
 
