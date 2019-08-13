@@ -1,18 +1,3 @@
-
-# -*- coding: utf-8 -*-
-
-#  Licensed under the Apache License, Version 2.0 (the "License"); you may
-#  not use this file except in compliance with the License. You may obtain
-#  a copy of the License at
-#
-#       https://www.apache.org/licenses/LICENSE-2.0
-#
-#  Unless required by applicable law or agreed to in writing, software
-#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-#  License for the specific language governing permissions and limitations
-#  under the License.
-
 from __future__ import unicode_literals
 
 import os
@@ -29,6 +14,8 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,
 )
+import pytz
+import datetime
 
 app = Flask(__name__)
 
@@ -44,6 +31,11 @@ if channel_access_token is None:
 
 line_bot_api = LineBotApi(channel_access_token)
 parser = WebhookParser(channel_secret)
+
+def get_japan_time():
+    jp = datetime.datetime.now(tz=pytz.timezone('Asia/Tokyo'))
+    jesse_date = jp.strftime('%Y-%m-%d %H:%M:%S')
+    return jesse_date
 
 
 @app.route("/callback", methods=['POST'])
@@ -67,10 +59,11 @@ def callback():
         if not isinstance(event.message, TextMessage):
             continue
 
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=event.message.text)
-        )
+        if '!time' in event.message:
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=get_japan_time())
+            )
 
     return 'OK'
 
