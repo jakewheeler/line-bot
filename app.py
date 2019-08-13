@@ -19,7 +19,7 @@ import datetime
 import requests
 import json
 
-weather_api_url = 'api.openweathermap.org/data/2.5/weather?id=2110498&APPID{APPID}=&units=imperial'.format(os.getenv('APPID', None))
+weather_api_url = 'api.openweathermap.org/data/2.5/weather?id=2110498&APPID={APPID}&units=imperial'.format(APPID=os.getenv('APPID', None))
 
 app = Flask(__name__)
 
