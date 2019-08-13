@@ -16,6 +16,10 @@ from linebot.models import (
 )
 import pytz
 import datetime
+import requests
+import json
+
+weather_api_url = 'api.openweathermap.org/data/2.5/weather?id=2110498&APPID{APPID}=&units=imperial'.format(os.getenv('APPID', None))
 
 app = Flask(__name__)
 
@@ -36,6 +40,19 @@ def get_japan_time():
     jp = datetime.datetime.now(tz=pytz.timezone('Asia/Tokyo'))
     jesse_date = jp.strftime('It is currently %b %d %Y at %H:%M:%S %p for Jesse.')
     return jesse_date
+
+def get_japan_weather_info():
+    response = requests.get(weather_api_url)
+    if response.status_code == 200:
+        data = json.loads(response.content.decode('utf-8'))
+
+        curr_temp = data['main']['temp']
+        humidity = data['main']['humidity']
+
+        return 'Jesse is experiencing {curr_temp} F weather and a humidity of {humidity}%.'.format(curr_temp=curr_temp, humidity=humidity)
+    else:
+        return 'Weather API might be fucked up right now.'
+
 
 
 @app.route("/callback", methods=['POST'])
@@ -63,6 +80,11 @@ def callback():
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text=get_japan_time())
+            )
+        elif '!weather' in event.message.text:
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=get_japan_weather_info())
             )
 
     return 'OK'
