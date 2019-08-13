@@ -59,7 +59,7 @@ def callback():
         if not isinstance(event.message, TextMessage):
             continue
 
-        if '!time' in event.message:
+        if '!time' in event.message.text:
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text=get_japan_time())
