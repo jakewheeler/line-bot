@@ -36,3 +36,27 @@ def get_beer():
         return 'Jesse is currently drinking a {beer} with an ABV of {abv}%'.format(beer=random_beer['name'], abv=random_beer['abv'])
     else:
         return 'Beer API might be fucked up right now.'
+
+cmd = {
+        '!help': {
+            'detail': 'Get command help'
+            },
+            '!time': {
+                'func': get_japan_time(),
+                'detail': 'Get time in Yonezawa'
+            },
+            '!weather': {
+                'func': get_japan_weather_info(),
+                'detail': 'Get weather in Yonezawa'
+            },
+            '!beer': {
+                'func': get_beer(),
+                'detail': 'Get random beer'
+            }
+    }
+
+def get_help():
+    help_text = ""
+    for k, v in cmd.items():
+        help_text += k + ': ' + v['detail'] + '\n'
+    return help_text[:-1] # remove \n from the end

@@ -20,6 +20,8 @@ import requests
 import json
 import math
 import random
+
+#### bot code ####
 import bot
 
 
@@ -58,22 +60,18 @@ def callback():
         if not isinstance(event.message, TextMessage):
             continue
 
-        if '!time' in event.message.text:
+        if ('!help') in event.message.text:
             line_bot_api.reply_message(
                 event.reply_token,
-                TextSendMessage(text=bot.get_japan_time())
+                TextSendMessage(bot.get_help())
             )
-        elif '!weather' in event.message.text:
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text=bot.get_japan_weather_info())
-            )
-        elif '!beer' in event.message.text:
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text=bot.get_beer())
-            )
-
+        else:
+            for k in bot.cmd.keys():
+                if k in event.message.text:
+                    line_bot_api.reply_message(
+                        event.reply_token,
+                        TextSendMessage(text=bot.cmd[k]['func'])
+                    )
     return 'OK'
 
 if __name__ == "__main__":
