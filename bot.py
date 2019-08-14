@@ -5,10 +5,11 @@ import math
 import random
 import pytz
 import os
+import sys
+import osrs
 
 weather_api_url = 'https://api.openweathermap.org/data/2.5/weather?id=2110498&APPID={WEATHER_API_KEY}&units=imperial'.format(WEATHER_API_KEY=os.getenv('APPID', None))
 beer_api_url = 'https://sandbox-api.brewerydb.com/v2/beers/?key={beerApiKey}'.format(beerApiKey=os.getenv('BEER_API_KEY', None))
-
 
 def get_japan_time():
     jp = datetime.datetime.now(tz=pytz.timezone('Asia/Tokyo'))
@@ -25,7 +26,7 @@ def get_japan_weather_info():
 
         return 'Jesse is experiencing {curr_temp} F weather and a humidity of {humidity}%.'.format(curr_temp=curr_temp, humidity=humidity)
     else:
-        return 'Weather API might be fucked up right now.'
+        return 'Weather API might be fucked up right now or command is incorrect. Try `!help`.'
 
 def get_beer():
     response = requests.get(beer_api_url)
@@ -35,23 +36,38 @@ def get_beer():
         random_beer = body['data'][random_beer_num]
         return 'Jesse is currently drinking a {beer} with an ABV of {abv}%'.format(beer=random_beer['name'], abv=random_beer['abv'])
     else:
-        return 'Beer API might be fucked up right now.'
+        return 'Beer API might be fucked up right now or command is incorrect. Try `!help`.'
 
 cmd = {
         '!help': {
+            'syntax': '!help',
+            'hasParams': False,
+            'func': None,
             'detail': 'Get command help'
             },
             '!time': {
+                'syntax': '!help',
+                'hasParams': False,
                 'func': get_japan_time(),
                 'detail': 'Get time in Yonezawa'
             },
             '!weather': {
+                'syntax': '!help',
+                'hasParams': False,
                 'func': get_japan_weather_info(),
                 'detail': 'Get weather in Yonezawa'
             },
             '!beer': {
+                'syntax': '!help',
+                'hasParams': False,
                 'func': get_beer(),
                 'detail': 'Get random beer'
+            },
+            '!rs': {
+                'syntax': '!help',
+                'hasParams': True,
+                'func': osrs.get_ge_price,
+                'detail': 'Gets current price of specified item from the Grand Exchange'
             }
     }
 
@@ -60,3 +76,20 @@ def get_help():
     for k, v in cmd.items():
         help_text += k + ': ' + v['detail'] + '\n'
     return help_text[:-1] # remove \n from the end
+
+if __name__ == '__main__':
+    test_text = '!rs armadyl godsword'
+
+    # print(osrs.get_ge_price('abyssal whip'))
+    if ('!help') in test_text:
+        print(get_help())
+    else:
+        for k in cmd.keys():
+            if k in test_text:
+                args = test_text[len(k)+1:]
+                if args != None and args != '' and cmd[k]['hasParams'] is True:
+                    print(cmd[k]['func'](args))
+                elif cmd[k]['hasParams'] is False:
+                    print(cmd[k]['func'])
+                else:
+                    print('Could not get command')

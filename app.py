@@ -68,10 +68,23 @@ def callback():
         else:
             for k in bot.cmd.keys():
                 if k in event.message.text:
-                    line_bot_api.reply_message(
-                        event.reply_token,
-                        TextSendMessage(text=bot.cmd[k]['func'])
-                    )
+                    args = event.message.text[len(k)+1:]
+                    if args != None and args != '' and bot.cmd[k]['hasParams'] is True:
+                        line_bot_api.reply_message(
+                            event.reply_token,
+                            TextSendMessage(text=bot.cmd[k]['func'](args))
+                        )
+                    elif bot.cmd[k]['hasParams'] is False:
+                        line_bot_api.reply_message(
+                            event.reply_token,
+                            TextSendMessage(text=bot.cmd[k]['func'])
+                        )
+                    else:
+                        line_bot_api.reply_message(
+                            event.reply_token,
+                            TextSendMessage(text='Could not get command')
+                        )  
+
     return 'OK'
 
 if __name__ == "__main__":
