@@ -30,7 +30,7 @@ def get_ge_price(item_name):
         item_data = __get_item_details(item_id)
         return '{item}: {cost} gp'.format(item=item_data['item']['name'], cost=item_data['item']['current']['price'])
     except:
-        return 'Command failed. Try `!help!` for synax.'
+        return 'Command failed. Try `!help!` for syntax.'
 
 
 

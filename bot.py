@@ -11,6 +11,12 @@ import osrs
 weather_api_url = 'https://api.openweathermap.org/data/2.5/weather?id=2110498&APPID={WEATHER_API_KEY}&units=imperial'.format(WEATHER_API_KEY=os.getenv('APPID', None))
 beer_api_url = 'https://sandbox-api.brewerydb.com/v2/beers/?key={beerApiKey}'.format(beerApiKey=os.getenv('BEER_API_KEY', None))
 
+def get_days_til_new_horizons():
+    release = datetime.datetime(2020, 3, 20)
+    today = datetime.datetime.now()
+    delta = release - today
+    return 'There are {days} until AC:NH is out.'.format(days=str(delta).split(',',1)[0])
+
 def get_japan_time():
     jp = datetime.datetime.now(tz=pytz.timezone('Asia/Tokyo'))
     jesse_date = jp.strftime('It is currently %b %d %Y at %H:%M:%S %p for Jesse.')
@@ -46,39 +52,45 @@ cmd = {
             'detail': 'Get command help'
             },
             '!time': {
-                'syntax': '!help',
+                'syntax': '!time',
                 'hasParams': False,
                 'func': get_japan_time(),
                 'detail': 'Get time in Yonezawa'
             },
             '!weather': {
-                'syntax': '!help',
+                'syntax': '!weather',
                 'hasParams': False,
                 'func': get_japan_weather_info(),
                 'detail': 'Get weather in Yonezawa'
             },
             '!beer': {
-                'syntax': '!help',
+                'syntax': '!beer',
                 'hasParams': False,
                 'func': get_beer(),
                 'detail': 'Get random beer'
             },
             '!rs': {
-                'syntax': '!help',
+                'syntax': '!rs [item name]',
                 'hasParams': True,
                 'func': osrs.get_ge_price,
                 'detail': 'Gets current price of specified item from the Grand Exchange'
+            },
+            '!ac': {
+                'syntax': '!ac',
+                'hasParams': False,
+                'func': get_days_til_new_horizons(),
+                'detail': 'Gets number of days until Animal Crossing: New Horizons is available in the US'
             }
     }
 
 def get_help():
     help_text = ""
-    for k, v in cmd.items():
-        help_text += k + ': ' + v['detail'] + '\n'
+    for v in cmd.values():
+        help_text += v['syntax'] + ': ' + v['detail'] + '\n'
     return help_text[:-1] # remove \n from the end
 
 if __name__ == '__main__':
-    test_text = '!rs armadyl godsword'
+    test_text = '!ac'
 
     # print(osrs.get_ge_price('abyssal whip'))
     if ('!help') in test_text:
