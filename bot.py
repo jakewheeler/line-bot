@@ -8,6 +8,9 @@ import os
 import sys
 import osrs
 
+from dotenv import load_dotenv
+load_dotenv()
+
 weather_api_url = 'https://api.openweathermap.org/data/2.5/weather?id=2110498&APPID={WEATHER_API_KEY}&units=imperial'.format(WEATHER_API_KEY=os.getenv('APPID', None))
 beer_api_url = 'https://sandbox-api.brewerydb.com/v2/beers/?key={beerApiKey}'.format(beerApiKey=os.getenv('BEER_API_KEY', None))
 ENABLE_LOGGING = os.getenv('ENABLE_LOGGING', False)
@@ -55,19 +58,19 @@ cmd = {
             '!time': {
                 'syntax': '!time',
                 'hasParams': False,
-                'func': get_japan_time(),
+                'func': get_japan_time,
                 'detail': 'Get time in Yonezawa'
             },
             '!weather': {
                 'syntax': '!weather',
                 'hasParams': False,
-                'func': get_japan_weather_info(),
+                'func': get_japan_weather_info,
                 'detail': 'Get weather in Yonezawa'
             },
             '!beer': {
                 'syntax': '!beer',
                 'hasParams': False,
-                'func': get_beer(),
+                'func': get_beer,
                 'detail': 'Get random beer'
             },
             '!rs': {
@@ -79,7 +82,7 @@ cmd = {
             '!ac': {
                 'syntax': '!ac',
                 'hasParams': False,
-                'func': get_days_til_new_horizons(),
+                'func': get_days_til_new_horizons,
                 'detail': 'Gets number of days until Animal Crossing: New Horizons is available in the US'
             }
     }
@@ -93,7 +96,6 @@ def get_help():
 if __name__ == '__main__':
     test_text = '!time'
 
-    # print(osrs.get_ge_price('abyssal whip'))
     if ('!help') in test_text:
         print(get_help())
     else:
@@ -103,6 +105,6 @@ if __name__ == '__main__':
                 if args != None and args != '' and cmd[k]['hasParams'] == True:
                     print(cmd[k]['func'](args))
                 elif cmd[k]['hasParams'] == False:
-                    print(cmd[k]['func'])
+                    print(cmd[k]['func']())
                 else:
                     print('Could not get command')
