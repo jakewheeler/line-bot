@@ -69,16 +69,22 @@ def callback():
             for k in bot.cmd.keys():
                 if k in event.message.text:
                     args = event.message.text[len(k)+1:]
-                    if args != None and args != '' and bot.cmd[k]['hasParams'] is True:
+                    if args != None and args != '' and bot.cmd[k]['hasParams'] == True:
+                        send_text = bot.cmd[k]['func'](args)
                         line_bot_api.reply_message(
                             event.reply_token,
-                            TextSendMessage(text=bot.cmd[k]['func'](args))
+                            TextSendMessage(text=send_text)
                         )
-                    elif bot.cmd[k]['hasParams'] is False:
+                        if bot.ENABLE_LOGGING == True:
+                            print(send_text)
+                    elif bot.cmd[k]['hasParams'] == False:
+                        send_text = bot.cmd[k]['func']
                         line_bot_api.reply_message(
                             event.reply_token,
-                            TextSendMessage(text=bot.cmd[k]['func'])
+                            TextSendMessage(text=send_text)
                         )
+                        if bot.ENABLE_LOGGING == True:
+                            print(send_text)
                     else:
                         line_bot_api.reply_message(
                             event.reply_token,

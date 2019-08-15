@@ -10,6 +10,7 @@ import osrs
 
 weather_api_url = 'https://api.openweathermap.org/data/2.5/weather?id=2110498&APPID={WEATHER_API_KEY}&units=imperial'.format(WEATHER_API_KEY=os.getenv('APPID', None))
 beer_api_url = 'https://sandbox-api.brewerydb.com/v2/beers/?key={beerApiKey}'.format(beerApiKey=os.getenv('BEER_API_KEY', None))
+ENABLE_LOGGING = os.getenv('ENABLE_LOGGING', False)
 
 def get_days_til_new_horizons():
     release = datetime.datetime(2020, 3, 20)
@@ -90,7 +91,7 @@ def get_help():
     return help_text[:-1] # remove \n from the end
 
 if __name__ == '__main__':
-    test_text = '!ac'
+    test_text = '!time'
 
     # print(osrs.get_ge_price('abyssal whip'))
     if ('!help') in test_text:
@@ -99,9 +100,9 @@ if __name__ == '__main__':
         for k in cmd.keys():
             if k in test_text:
                 args = test_text[len(k)+1:]
-                if args != None and args != '' and cmd[k]['hasParams'] is True:
+                if args != None and args != '' and cmd[k]['hasParams'] == True:
                     print(cmd[k]['func'](args))
-                elif cmd[k]['hasParams'] is False:
+                elif cmd[k]['hasParams'] == False:
                     print(cmd[k]['func'])
                 else:
                     print('Could not get command')
