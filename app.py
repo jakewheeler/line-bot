@@ -78,7 +78,7 @@ def callback():
                         if bot.ENABLE_LOGGING == True:
                             print(send_text)
                     elif bot.cmd[k]['hasParams'] == False:
-                        send_text = bot.cmd[k]['func']
+                        send_text = bot.cmd[k]['func']()
                         line_bot_api.reply_message(
                             event.reply_token,
                             TextSendMessage(text=send_text)
