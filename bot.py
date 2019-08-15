@@ -8,8 +8,8 @@ import os
 import sys
 import osrs
 
-from dotenv import load_dotenv
-load_dotenv()
+# from dotenv import load_dotenv
+# load_dotenv()
 
 weather_api_url = 'https://api.openweathermap.org/data/2.5/weather?id=2110498&APPID={WEATHER_API_KEY}&units=imperial'.format(WEATHER_API_KEY=os.getenv('APPID', None))
 beer_api_url = 'https://sandbox-api.brewerydb.com/v2/beers/?key={beerApiKey}'.format(beerApiKey=os.getenv('BEER_API_KEY', None))
