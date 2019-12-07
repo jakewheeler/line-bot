@@ -8,19 +8,28 @@ import os
 import sys
 import osrs
 
-# from dotenv import load_dotenv
-# load_dotenv()
+# env variables
+DEBUG = os.getenv("DEBUG", False)
+ENV = os.getenv("ENV", "dev")
 
-weather_api_url = "https://api.openweathermap.org/data/2.5/weather?id=2110498&APPID={WEATHER_API_KEY}&units=imperial".format(
-    WEATHER_API_KEY=os.getenv("APPID", None)
+if ENV == "dev":
+    from dotenv import load_dotenv
+
+    load_dotenv()
+
+# Access keys
+WEATHER_API_KEY = os.getenv("APPID", None)
+CURRENCY_CONVERSION_KEY = os.getenv("CURRENCY_CONVERSION_KEY", None)
+BEER_API_KEY = os.getenv("BEER_API_KEY", None)
+
+# API URLs
+weather_api_url = f"https://api.openweathermap.org/data/2.5/weather?id=2110498&APPID={WEATHER_API_KEY}&units=imperial"
+
+beer_api_url = f"https://sandbox-api.brewerydb.com/v2/beers/?key={BEER_API_KEY}"
+
+currency_conversion_api_url = (
+    f"http://data.fixer.io/api/latest?access_key={CURRENCY_CONVERSION_KEY}"
 )
-beer_api_url = "https://sandbox-api.brewerydb.com/v2/beers/?key={beerApiKey}".format(
-    beerApiKey=os.getenv("BEER_API_KEY", None)
-)
-currency_conversion_api_url = "http://data.fixer.io/api/latest?access_key={currency_conversion__api_key}".format(
-    currency_conversion__api_key=os.getenv("CURRENCY_CONVERSION_KEY", None)
-)
-ENABLE_LOGGING = os.getenv("ENABLE_LOGGING", False)
 
 
 def get_usd_to_yen(amt):
@@ -58,9 +67,8 @@ def get_days_til_new_horizons():
     release = datetime.datetime(2020, 3, 20)
     today = datetime.datetime.now()
     delta = release - today
-    return "There are {days} until AC:NH is out.".format(
-        days=str(delta).split(",", 1)[0]
-    )
+    days = str(delta).split(",", 1)[0]
+    return f"There are {days} until AC:NH is out."
 
 
 def get_japan_time():
@@ -77,9 +85,7 @@ def get_japan_weather_info():
         curr_temp = data["main"]["temp"]
         humidity = data["main"]["humidity"]
 
-        return "Jesse is experiencing {curr_temp} F weather and a humidity of {humidity}%.".format(
-            curr_temp=curr_temp, humidity=humidity
-        )
+        return f"Jesse is experiencing {curr_temp} F weather and a humidity of {humidity}%."
     else:
         return "Weather API might be fucked up right now or command is incorrect. Try `!help`."
 
@@ -90,9 +96,10 @@ def get_beer():
         body = json.loads(response.content.decode("utf-8"))
         random_beer_num = math.floor(random.randint(1, len(body["data"])))
         random_beer = body["data"][random_beer_num]
-        return "Jesse is currently drinking a {beer} with an ABV of {abv}%".format(
-            beer=random_beer["name"], abv=random_beer["abv"]
-        )
+
+        beer = random_beer["name"]
+        abv = random_beer["abv"]
+        return f"Jesse is currently drinking a {beer} with an ABV of {abv}%"
     else:
         return "Beer API might be fucked up right now or command is incorrect. Try `!help`."
 
@@ -157,7 +164,7 @@ def get_help():
 
 
 if __name__ == "__main__":
-    test_text = "!help"
+    test_text = "!ac"
 
     if ("!help") in test_text:
         print(get_help())

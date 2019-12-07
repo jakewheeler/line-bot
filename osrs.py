@@ -32,9 +32,10 @@ def get_ge_price(item_name):
     try:
         item_id = __get_item_id_by_name(item_name)
         item_data = __get_item_details(item_id)
-        return "{item}: {cost} gp".format(
-            item=item_data["item"]["name"], cost=item_data["item"]["current"]["price"]
-        )
+        item = item_data["item"]["name"]
+        cost = item_data["item"]["current"]["price"]
+
+        return f"{item}: {cost} gp"
     except:
         return "Command failed. Try `!help!` for syntax."
 
