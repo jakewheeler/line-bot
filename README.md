@@ -32,7 +32,6 @@ Note that when deploying, your server will need to run the following script:
 
 If running on a Heroku Dyno, there is no need to modify the Procfile included in this repository.
 
-
 ## Usage
 
 - `!help` - Lists all available commands and how to use them
