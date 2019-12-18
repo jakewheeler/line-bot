@@ -42,3 +42,4 @@ If running on a Heroku Dyno, there is no need to modify the Procfile included in
 - `!ac` - Gets the remaining days until Animal Crossing: New Horizons is released
 - `!usdjpy` - Given an amount in US dollars, gets the equivalent amount in Japanese Yen
 - `!jpyusd` - Given an amount in Japanese Yen, gets the equivalent amount in US dollars
+- `!josh` - Calls Josh a random emoji 🤠

@@ -7,6 +7,7 @@ import pytz
 import os
 import sys
 import osrs
+from randomEmoji import random_emoji
 
 # env variables
 DEBUG = os.getenv("DEBUG", False)
@@ -30,6 +31,14 @@ beer_api_url = f"https://sandbox-api.brewerydb.com/v2/beers/?key={BEER_API_KEY}"
 currency_conversion_api_url = (
     f"http://data.fixer.io/api/latest?access_key={CURRENCY_CONVERSION_KEY}"
 )
+
+
+def josh():
+    emoji = random_emoji()
+    try:
+        return f"Josh is a {emoji[0]}  ({emoji[2]})"
+    except:
+        return "I broke trying to call Josh an emoji."
 
 
 def get_usd_to_yen(amt):
@@ -153,6 +162,12 @@ cmd = {
         "func": get_yen_to_usd,
         "detail": "Converts JPY to USD",
     },
+    "!josh": {
+        "syntax": "!josh",
+        "hasParams": False,
+        "func": josh,
+        "detail": "Calls Josh a random emoji",
+    },
 }
 
 
@@ -164,7 +179,7 @@ def get_help():
 
 
 if __name__ == "__main__":
-    test_text = "!ac"
+    test_text = "!josh"
 
     if ("!help") in test_text:
         print(get_help())
