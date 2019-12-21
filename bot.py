@@ -36,7 +36,7 @@ currency_conversion_api_url = (
 def josh():
     emoji = random_emoji()
     try:
-        return f"Josh is a {emoji[0]}  ({emoji[2]})"
+        return f"Josh is a {emoji[0]} ({emoji[2]})"
     except:
         return "I broke trying to call Josh an emoji."
 
@@ -82,7 +82,7 @@ def get_days_til_new_horizons():
 
 def get_japan_time():
     jp = datetime.datetime.now(tz=pytz.timezone("Asia/Tokyo"))
-    jesse_date = jp.strftime("It is currently %b %d %Y at %H:%M:%S %p for Jesse.")
+    jesse_date = jp.strftime("It is currently %b %d %Y at %I:%M:%S %p for Jesse.")
     return jesse_date
 
 
@@ -179,7 +179,7 @@ def get_help():
 
 
 if __name__ == "__main__":
-    test_text = "!josh"
+    test_text = "!time"
 
     if ("!help") in test_text:
         print(get_help())
