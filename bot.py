@@ -86,6 +86,18 @@ def get_japan_time():
     return jesse_date
 
 
+def is_friday():
+    jp_day = datetime.datetime.now(tz=pytz.timezone("Asia/Tokyo")).weekday()
+    us_day = datetime.datetime.now().weekday()
+    return us_day == 5 or jp_day == 5
+
+
+def get_friday_video():
+    if is_friday():
+        return "https://www.youtube.com/watch?v=S-CMaONmduM"
+    return "Not Friday 😔"
+
+
 def get_japan_weather_info():
     response = requests.get(weather_api_url)
     if response.status_code == 200:
@@ -168,6 +180,12 @@ cmd = {
         "func": josh,
         "detail": "Calls Josh a random emoji",
     },
+    "!friday": {
+        "syntax": "!friday",
+        "hasParams": False,
+        "func": get_friday_video,
+        "detail": "Its Friday 🤠",
+    },
 }
 
 
@@ -179,7 +197,7 @@ def get_help():
 
 
 if __name__ == "__main__":
-    test_text = "!time"
+    test_text = "!friday"
 
     if ("!help") in test_text:
         print(get_help())

@@ -43,3 +43,4 @@ If running on a Heroku Dyno, there is no need to modify the Procfile included in
 - `!usdjpy` - Given an amount in US dollars, gets the equivalent amount in Japanese Yen
 - `!jpyusd` - Given an amount in Japanese Yen, gets the equivalent amount in US dollars
 - `!josh` - Calls Josh a random emoji 🤠
+- `!friday` - Adds Friday hype video to the chat (only works on Fridays)
