@@ -12,6 +12,7 @@ To get started, you will need your own API keys from:
 - [OpenWeatherMap](https://openweathermap.org/)
 - [BreweryDB](https://www.brewerydb.com/)
 - [fixer.io](https://fixer.io/)
+- [GitHub](https://github.com/)
 
 All API keys can be had for free, although with some limitations.
 
