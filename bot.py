@@ -22,6 +22,7 @@ if ENV == "dev":
 WEATHER_API_KEY = os.getenv("APPID", None)
 CURRENCY_CONVERSION_KEY = os.getenv("CURRENCY_CONVERSION_KEY", None)
 BEER_API_KEY = os.getenv("BEER_API_KEY", None)
+GITHUB_API_KEY = os.getenv("GITHUB_API_KEY", None)
 
 # API URLs
 weather_api_url = f"https://api.openweathermap.org/data/2.5/weather?id=2110498&APPID={WEATHER_API_KEY}&units=imperial"
@@ -31,6 +32,8 @@ beer_api_url = f"https://sandbox-api.brewerydb.com/v2/beers/?key={BEER_API_KEY}"
 currency_conversion_api_url = (
     f"http://data.fixer.io/api/latest?access_key={CURRENCY_CONVERSION_KEY}"
 )
+
+changelog_api_url = "https://api.github.com/repos/jakewheeler/line-bot/commits"
 
 
 def josh():
@@ -124,6 +127,22 @@ def get_beer():
         return "Beer API might be fucked up right now or command is incorrect. Try `!help`."
 
 
+def get_changelog():
+    headers = {"Authorization": f"Bearer {GITHUB_API_KEY}"}
+    response = requests.get(changelog_api_url, headers=headers).json()
+
+    line_msg = ""
+    for i in range(3):
+        record = response[i]
+        name = record["author"]["login"]
+        time = record["commit"]["author"]["date"][0:10]
+
+        message = record["commit"]["message"]
+        line_msg = line_msg + f"{name} ({time}): {message}\n"
+
+    return line_msg[:-1]
+
+
 cmd = {
     "!help": {
         "syntax": "!help",
@@ -185,6 +204,12 @@ cmd = {
         "func": get_friday_video,
         "detail": "Its Friday 🤠",
     },
+    "!cl": {
+        "syntax": "!cl",
+        "hasParams": False,
+        "func": get_changelog,
+        "detail": "Changelog - get the last 3 commits in the repository",
+    },
 }
 
 
@@ -196,7 +221,7 @@ def get_help():
 
 
 if __name__ == "__main__":
-    test_text = "!friday"
+    test_text = "!cl"
 
     if ("!help") in test_text:
         print(get_help())
