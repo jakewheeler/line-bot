@@ -36,6 +36,7 @@ currency_conversion_api_url = (
 def josh():
     emoji = random_emoji()
     try:
+        # emoji and text
         return f"Josh is a {emoji[0]} ({emoji[2]})"
     except:
         return "I broke trying to call Josh an emoji."
@@ -62,9 +63,6 @@ def get_yen_to_usd(amt):
     response = requests.get(currency_conversion_api_url)
     if response.status_code == 200:
         data = json.loads(response.content.decode("utf-8"))
-
-        # need to convert from USD to EUR
-        # 2,500 * 1.09 / 117
         jpy = float(amt) * float(data["rates"]["USD"])
         usd = float(jpy) / float(data["rates"]["JPY"])
         return f"${usd:.2f}"
@@ -87,9 +85,10 @@ def get_japan_time():
 
 
 def is_friday():
+    Friday = 4
     jp_day = datetime.datetime.now(tz=pytz.timezone("Asia/Tokyo")).weekday()
-    us_day = datetime.datetime.now().weekday()
-    return us_day == 5 or jp_day == 5
+    us_day = datetime.datetime.now(tz=pytz.timezone("US/Eastern")).weekday()
+    return us_day == Friday or jp_day == Friday
 
 
 def get_friday_video():

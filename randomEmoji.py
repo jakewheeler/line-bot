@@ -79,7 +79,3 @@ def random_emoji(unicode_version=6):
     emoji_codepoint = "U+{}".format(hex(ord(emoji))[2:].upper())
 
     return (emoji, emoji_codepoint, emoji_name)
-
-
-# print(*random_emoji(UNICODE_VERSION), sep="\t")
-
