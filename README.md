@@ -44,3 +44,4 @@ If running on a Heroku Dyno, there is no need to modify the Procfile included in
 - `!jpyusd` - Given an amount in Japanese Yen, gets the equivalent amount in US dollars
 - `!josh` - Calls Josh a random emoji 🤠
 - `!friday` - Adds Friday hype video to the chat (only works on Fridays)
+- `!cl` - Changelog command shows the latest 3 commits in the repository
