@@ -81,7 +81,7 @@ def callback():
                     else:
                         line_bot_api.reply_message(
                             event.reply_token,
-                            TextSendMessage(text="Could not get command"),
+                            TextSendMessage(text="Could not get command. Try !help."),
                         )
 
     return "OK"

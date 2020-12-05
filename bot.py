@@ -6,6 +6,8 @@ import random
 import pytz
 import os
 import sys
+
+from requests.api import request
 import osrs
 from randomEmoji import random_emoji
 
@@ -43,6 +45,67 @@ def josh():
         return f"Josh is a {emoji[0]} ({emoji[2]})"
     except:
         return "I broke trying to call Josh an emoji."
+
+
+def _parseDateToDict(date):
+    return {"year": date[0:4], "month": date[5:7], "day": date[8:10]}
+
+
+def _get_covid_url(start_date, end_date):
+    erie_covid_url = (
+        f"https://covid-19.datasettes.com/covid.json?sql=select+rowid%2C+date%2C+county%2C+state%2C+fips%2C+cases%2C+deaths"
+        f"+from+ny_times_us_counties"
+        f"+where+%22county%22+%3D+%3Ap0+and+(%22date%22+%3D+%3Ap1+or+%22date%22+%3D+%3Ap2)+and+%22state%22+%3D+%3Ap3"
+        f"+order+by+date+desc+limit+101&p0=Erie&p1={start_date['year']}-{start_date['month']}-{start_date['day']}"
+        f"&p2={end_date['year']}-{end_date['month']}-{end_date['day']}&p3=Pennsylvania"
+    )
+    return erie_covid_url
+
+
+def _format_covid_date_output(date_dict):
+    return datetime.datetime(
+        int(date_dict["year"]), int(date_dict["month"]), int(date_dict["day"])
+    )
+
+
+def _parse_covid_input(dates):
+    split = dates.split(" ")
+    t1 = split[0]
+    t2 = split[1]
+    return t1, t2
+
+
+def get_covid_cases(dates):
+    # takes string as one arg which should probably change in the future
+    try:
+        t1, t2 = _parse_covid_input(dates)
+
+        t1_dict = _parseDateToDict(t1)
+        t2_dict = _parseDateToDict(t2)
+
+        erie_url = _get_covid_url(t1_dict, t2_dict)
+
+        response = requests.get(erie_url)
+
+        # response is good so we can continue
+        if response.status_code == 200:
+            data = json.loads(response.content)
+            days_data = data["rows"]
+
+            # Unexpected response, should have both days
+            if len(days_data) < 2:
+                return "Unable to get both of the specified dates."
+
+            date1 = _format_covid_date_output(t1_dict)
+            date2 = _format_covid_date_output(t2_dict)
+
+            cases = abs(int(days_data[0][5]) - int(days_data[1][5]))
+            deaths = abs(int(days_data[0][6]) - int(days_data[1][6]))
+            return f"Between {date1.strftime('%b %d %Y')} and {date2.strftime('%b %d %Y')}, there has been +{cases} cases and +{deaths} deaths in Erie, PA."
+        else:
+            return "Incorrect query."
+    except:
+        return "Error with input"
 
 
 def get_usd_to_yen(amt):
@@ -87,7 +150,7 @@ def get_japan_time():
     return jesse_date
 
 
-def is_friday():
+def _is_friday():
     Friday = 4
     jp_day = datetime.datetime.now(tz=pytz.timezone("Asia/Tokyo")).weekday()
     us_day = datetime.datetime.now(tz=pytz.timezone("US/Eastern")).weekday()
@@ -95,7 +158,7 @@ def is_friday():
 
 
 def get_friday_video():
-    if is_friday():
+    if _is_friday():
         return "https://www.youtube.com/watch?v=S-CMaONmduM"
     return "Not Friday 😔"
 
@@ -210,6 +273,12 @@ cmd = {
         "func": get_changelog,
         "detail": "Changelog - get the last 3 commits in the repository",
     },
+    "!covid": {
+        "syntax": "!covid yyyy-mm-dd yyyy-mm-dd",
+        "hasParams": True,
+        "func": get_covid_cases,
+        "detail": "Gets confirmed COVID-19 cases in Erie, PA as of today",
+    },
 }
 
 
@@ -221,7 +290,7 @@ def get_help():
 
 
 if __name__ == "__main__":
-    test_text = "!cl"
+    test_text = "!covid 2020-04-12 2020-12-04"
 
     if ("!help") in test_text:
         print(get_help())
@@ -234,4 +303,4 @@ if __name__ == "__main__":
                 elif cmd[k]["hasParams"] == False:
                     print(cmd[k]["func"]())
                 else:
-                    print("Could not get command")
+                    print("Could not get command. Try !help.")
