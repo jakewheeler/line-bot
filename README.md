@@ -40,7 +40,8 @@ If running on a Heroku Dyno, there is no need to modify the Procfile included in
 - `!beer` - Gets a random beer and its ABV%
 - `!rs [item name]` - Given an Old School Runescape item, gets the current price of the item from the Grand Exchange
 - `!ac` - Gets the remaining days until Animal Crossing: New Horizons is released
-- `!usdjpy` - Given an amount in US dollars, gets the equivalent amount in Japanese Yen
-- `!jpyusd` - Given an amount in Japanese Yen, gets the equivalent amount in US dollars
+- `!usdjpy [usd]` - Given an amount in US dollars, gets the equivalent amount in Japanese Yen
+- `!jpyusd [jpy]` - Given an amount in Japanese Yen, gets the equivalent amount in US dollars
 - `!josh` - Calls Josh a random emoji 🤠
 - `!friday` - Adds Friday hype video to the chat (only works on Fridays)
+- `!covid [date range]` - Gets the difference in COVID-19 in Erie, PA cases and deaths between the date range provided
