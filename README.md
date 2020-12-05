@@ -12,6 +12,7 @@ To get started, you will need your own API keys from:
 - [OpenWeatherMap](https://openweathermap.org/)
 - [BreweryDB](https://www.brewerydb.com/)
 - [fixer.io](https://fixer.io/)
+- [GitHub](https://github.com/)
 
 All API keys can be had for free, although with some limitations.
 
@@ -44,4 +45,5 @@ If running on a Heroku Dyno, there is no need to modify the Procfile included in
 - `!jpyusd [jpy]` - Given an amount in Japanese Yen, gets the equivalent amount in US dollars
 - `!josh` - Calls Josh a random emoji 🤠
 - `!friday` - Adds Friday hype video to the chat (only works on Fridays)
+- `!cl` - Changelog command shows the latest 3 commits in the repository
 - `!covid [date range]` - Gets the difference in COVID-19 in Erie, PA cases and deaths between the date range provided
