@@ -59,6 +59,7 @@ def callback():
 # Handle text messages
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
+    app.logger.info(event.source.user_id)
     chat_msg = event.message.text
     should_respond, response = bot.handleCmd(chat_msg)
 
