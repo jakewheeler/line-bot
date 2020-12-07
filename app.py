@@ -5,19 +5,14 @@ import sys
 from argparse import ArgumentParser
 
 from flask import Flask, request, abort
-from linebot import LineBotApi, WebhookParser
+
+from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import (
     MessageEvent,
     TextMessage,
     TextSendMessage,
 )
-import pytz
-import datetime
-import requests
-import json
-import math
-import random
 
 #### bot code ####
 import bot
@@ -37,54 +32,38 @@ if channel_access_token is None:
     sys.exit(1)
 
 line_bot_api = LineBotApi(channel_access_token)
-parser = WebhookParser(channel_secret)
+handler = WebhookHandler(channel_secret)
 
 
 @app.route("/callback", methods=["POST"])
 def callback():
+    # get X-Line-Signature header value
     signature = request.headers["X-Line-Signature"]
 
     # get request body as text
     body = request.get_data(as_text=True)
+    app.logger.info("Request body: " + body)
 
-    # parse webhook body
+    # handle webhook body
     try:
-        events = parser.parse(body, signature)
+        handler.handle(body, signature)
     except InvalidSignatureError:
+        print(
+            "Invalid signature. Please check your channel access token/channel secret."
+        )
         abort(400)
 
-    # if event is MessageEvent and message is TextMessage, then echo text
-    for event in events:
-        if not isinstance(event, MessageEvent):
-            continue
-        if not isinstance(event.message, TextMessage):
-            continue
-
-        if ("!help") in event.message.text:
-            line_bot_api.reply_message(
-                event.reply_token, TextSendMessage(bot.get_help())
-            )
-        else:
-            for k in bot.cmd.keys():
-                if k in event.message.text:
-                    args = event.message.text[len(k) + 1 :]
-                    if args != None and args != "" and bot.cmd[k]["hasParams"] == True:
-                        line_bot_api.reply_message(
-                            event.reply_token,
-                            TextSendMessage(text=bot.cmd[k]["func"](args)),
-                        )
-                    elif bot.cmd[k]["hasParams"] == False:
-                        line_bot_api.reply_message(
-                            event.reply_token,
-                            TextSendMessage(text=bot.cmd[k]["func"]()),
-                        )
-                    else:
-                        line_bot_api.reply_message(
-                            event.reply_token,
-                            TextSendMessage(text="Could not get command. Try !help."),
-                        )
-
     return "OK"
+
+
+# Handle text messages
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+    chat_msg = event.message.text
+
+    line_bot_api.reply_message(
+        event.reply_token, TextSendMessage(text=bot.handleCmd(chat_msg))
+    )
 
 
 if __name__ == "__main__":

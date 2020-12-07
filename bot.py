@@ -5,9 +5,7 @@ import math
 import random
 import pytz
 import os
-import sys
 
-from requests.api import request
 import osrs
 from randomEmoji import random_emoji
 
@@ -206,11 +204,18 @@ def get_changelog():
     return line_msg[:-1]
 
 
+def get_help():
+    help_text = ""
+    for v in cmd.values():
+        help_text += v["syntax"] + ": " + v["detail"] + "\n"
+    return help_text[:-1]  # remove \n from the end
+
+
 cmd = {
     "!help": {
         "syntax": "!help",
         "hasParams": False,
-        "func": None,
+        "func": get_help,
         "detail": "Get command help",
     },
     "!time": {
@@ -282,11 +287,16 @@ cmd = {
 }
 
 
-def get_help():
-    help_text = ""
-    for v in cmd.values():
-        help_text += v["syntax"] + ": " + v["detail"] + "\n"
-    return help_text[:-1]  # remove \n from the end
+def handleCmd(chat_msg):
+    for key in cmd.keys():
+        if key in chat_msg:
+            args = chat_msg[len(key) + 1 :]
+            if args != None and args != "" and cmd[key]["hasParams"] == True:
+                return cmd[key]["func"](args)
+            elif cmd[key]["hasParams"] == False:
+                return cmd[key]["func"]()
+            else:
+                return "Could not get command. Try !help."
 
 
 if __name__ == "__main__":
