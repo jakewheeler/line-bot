@@ -60,10 +60,10 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     chat_msg = event.message.text
+    should_respond, response = bot.handleCmd(chat_msg)
 
-    line_bot_api.reply_message(
-        event.reply_token, TextSendMessage(text=bot.handleCmd(chat_msg))
-    )
+    if should_respond:
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response))
 
 
 if __name__ == "__main__":

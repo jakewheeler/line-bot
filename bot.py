@@ -292,11 +292,13 @@ def handleCmd(chat_msg):
         if key in chat_msg:
             args = chat_msg[len(key) + 1 :]
             if args != None and args != "" and cmd[key]["hasParams"] == True:
-                return cmd[key]["func"](args)
+                return True, cmd[key]["func"](args)
             elif cmd[key]["hasParams"] == False:
-                return cmd[key]["func"]()
+                return True, cmd[key]["func"]()
             else:
-                return "Could not get command. Try !help."
+                return True, "Could not get command. Try !help."
+
+    return False, ""
 
 
 if __name__ == "__main__":
