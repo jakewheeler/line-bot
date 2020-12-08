@@ -4,3 +4,4 @@ LineBotPy.code-workspace
 /__pycache__/
 .env
 creds.json
+.DS_Store

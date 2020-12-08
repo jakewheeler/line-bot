@@ -8,6 +8,10 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 
+def get_collection_ref(name):
+    return db.collection(name)
+
+
 def register_user(id, name):
     if get_user(id) != None:
         print(f"User has already registered: {id}")
@@ -22,22 +26,35 @@ def register_user(id, name):
     )
 
 
-def pay_user(sender_id, receiver_name, value):
-    sender_ref = get_user(sender_id)
-    receiver_ref = get_user_by_name(receiver_name)
+@firestore.transactional
+def pay_user(transaction, sender, receiver, value):
+    send_snap = sender.get(transaction=transaction)
+    rec_snap = receiver.get(transaction=transaction)
+    # check if user has cash
+    if send_snap.get("money") < value:
+        print("Sender does not have enough money to pay receiver.")
+        return False
 
-    sender_data = sender_ref.to_dict()
-    receiver_data = receiver_ref.to_dict()
+    transaction.update(
+        sender,
+        {
+            "money": send_snap.get("money") - value,
+            "sentPayments": firestore.ArrayUnion(
+                [{"to": rec_snap.get("name"), "value": value}]
+            ),
+        },
+    )
+    transaction.update(
+        receiver,
+        {
+            "money": rec_snap.get("money") + value,
+            "receivedPayments": firestore.ArrayUnion(
+                [{"from": send_snap.get("name"), "value": value}]
+            ),
+        },
+    )
 
-    if int(sender_data["money"]) < value:
-        return "Cannot process transaction. You too broke."
-
-    sender_data["money"] = int(sender_data["money"]) - int(value)
-    receiver_data["money"] = int(receiver_data["money"]) - int(value)
-
-    db.collection("users").document(sender_ref.id).set(sender_data)
-    db.collection("users").document(receiver_ref.id).set(receiver_data)
-    return "Transaction complete!"
+    return True
 
 
 def get_user(id):
@@ -55,5 +72,10 @@ def get_user_by_name(name):
     return user
 
 
-get_user_by_name("test")
+sender_ref = db.collection("users").document("myid")
+receiver_ref = db.collection("users").document("idk")
+transaction = db.transaction()
+print(pay_user(transaction, sender_ref, receiver_ref, 24))
+
+# register_user("myid", "jake")
 
