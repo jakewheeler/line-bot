@@ -61,7 +61,7 @@ def callback():
 def handle_message(event):
     print(event.source.user_id)
     chat_msg = event.message.text
-    should_respond, response = bot.handleCmd(chat_msg)
+    should_respond, response = bot.handle_cmd(chat_msg)
 
     if should_respond:
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response))

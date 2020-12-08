@@ -287,7 +287,7 @@ cmd = {
 }
 
 
-def handleCmd(chat_msg):
+def handle_cmd(chat_msg):
     for key in cmd.keys():
         if key in chat_msg:
             args = chat_msg[len(key) + 1 :]
