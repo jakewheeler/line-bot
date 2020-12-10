@@ -11,6 +11,8 @@ db = firestore.client()
 
 
 def _register_user(id, name):
+
+    # check if user is already registered
     if _get_user(id) != None:
         print(f"User has already registered: {id}")
         return "This LINE account has already registered."
@@ -26,6 +28,7 @@ def _register_user(id, name):
         "name": name,
         "receivedPayments": [],
         "sentPayments": [],
+        "payouts": {},
         "createdAt": dt.now(tz=pytz.timezone("US/Eastern")),
     }
 
@@ -107,7 +110,46 @@ def _get_user_by_name(name):
     return None
 
 
+def __user_has_been_paid_today(user_ref, date):
+    snap = user_ref.get()
+    payouts = snap.get("payouts")
+
+    if payouts.get(date) == None:
+        return False
+    return True
+
+
+def __payout(line_id):
+    payout_value = 20
+    todays_date = dt.now(tz=pytz.timezone("US/Eastern")).strftime("%Y-%m-%d")
+
+    # get user from id
+    user_ref = _get_user(line_id)
+
+    if user_ref == None:
+        return "ID is not valid."
+
+    if __user_has_been_paid_today(user_ref, todays_date):
+        return "You have already been paid out today."
+
+    user_snap = user_ref.get()
+    # create the payment
+    user_ref.update(
+        {
+            "money": user_snap.get("money") + payout_value,
+            f"payouts.{todays_date}": True,
+        }
+    )
+
+    return "You have received some dough."
+
+
 #### API ####
+
+
+def pay_me(line_id):
+    # user can collect money once per day
+    return __payout(line_id)
 
 
 def register(line_id, name):
@@ -115,7 +157,7 @@ def register(line_id, name):
     return status
 
 
-def pay(sender_id, receiver_name, value):
+def pay_user(sender_id, receiver_name, value):
     try:
         sender_ref = db.collection("users").document(sender_id)
         receiver_ref = db.collection("users").document(
@@ -129,5 +171,8 @@ def pay(sender_id, receiver_name, value):
         return "Transaction could not complete."
 
 
-pay("idk2", "jake", 12)
+# pay("exampleid", "hello", 1)
+# print(__daily_payout("idk2"))
+# register("id3", "bill")
+print(__payout("id34"))
 
