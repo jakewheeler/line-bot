@@ -8,18 +8,17 @@ cred = credentials.Certificate("creds.json")
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
+transaction = db.transaction()
 
 
 def _register_user(id, name):
-
+    account_creation_bonus = 100
     # check if user is already registered
     if _get_user(id) != None:
-        print(f"User has already registered: {id}")
         return "This LINE account has already registered."
 
     # check if username is taken
     if _get_user_by_name(name) != None:
-        print("This username is taken")
         return "This username is taken."
 
     # register user and pay them!
@@ -33,10 +32,7 @@ def _register_user(id, name):
     }
 
     db.collection("users").document(id).set(user)
-    print(f"Successfully registered user ID {id}")
-    return (
-        "Thanks for registering at Lancaster Bank. $100 has been added to your account."
-    )
+    return f"Thanks for registering at Lancaster Bank. {account_creation_bonus} Dosh Bucks have been added to your account."
 
 
 @firestore.transactional
@@ -45,18 +41,15 @@ def _pay_user(transaction, sender, receiver, value):
     rec_snap = receiver.get(transaction=transaction)
 
     if send_snap == None or rec_snap == None:
-        print("At least one user was invalid.")
-        return False
+        return "Invalid sender or receiver."
 
     # check that sender and receiver are different users
     if sender.id == receiver.id:
-        print("User can't send money to themselves.")
-        return False
+        return "You can't send money to yourself.."
 
     # check if user has cash
     if send_snap.get("money") < value:
-        print("Sender does not have enough money to pay receiver.")
-        return False
+        return f"{send_snap.get('name')} does not have enough DB to pay {rec_snap.get('name')}."
 
     transaction.update(
         sender,
@@ -89,7 +82,7 @@ def _pay_user(transaction, sender, receiver, value):
         },
     )
 
-    return True
+    return f"{send_snap.get('name')} successfully sent {value} DB to {rec_snap.get('name')}."
 
 
 def _get_user(id):
@@ -110,7 +103,7 @@ def _get_user_by_name(name):
     return None
 
 
-def __user_has_been_paid_today(user_ref, date):
+def __user_has_been_paid_on_date(user_ref, date):
     snap = user_ref.get()
     payouts = snap.get("payouts")
 
@@ -124,12 +117,14 @@ def __payout(line_id):
     todays_date = dt.now(tz=pytz.timezone("US/Eastern")).strftime("%Y-%m-%d")
 
     # get user from id
-    user_ref = _get_user(line_id)
+    user = _get_user(line_id)
 
-    if user_ref == None:
+    if user == None:
         return "ID is not valid."
 
-    if __user_has_been_paid_today(user_ref, todays_date):
+    user_ref = db.collection("users").document(line_id)
+
+    if __user_has_been_paid_on_date(user_ref, todays_date):
         return "You have already been paid out today."
 
     user_snap = user_ref.get()
@@ -141,38 +136,62 @@ def __payout(line_id):
         }
     )
 
-    return "You have received some dough."
+    return f"You have received {payout_value} Dosh Bucks."
+
+
+def __parse_chat_message(msg):
+    split = msg.split(" ")
+    return {"cmd": split[0], "args": split[1:]}
 
 
 #### API ####
 
 
-def pay_me(line_id):
+def handler(line_id, chat_message):
+    parsed = __parse_chat_message(chat_message)
+    user_cmd = parsed["cmd"]
+    args = parsed["args"]
+    if user_cmd in available_commands:
+        try:
+            return True, available_commands[user_cmd]["action"](line_id, *args)
+        except:
+            return False, ""
+
+
+def collect_ubi(line_id):
     # user can collect money once per day
     return __payout(line_id)
 
 
 def register(line_id, name):
+    if name == "":
+        return "Name is required."
+
     status = _register_user(line_id, name)
     return status
 
 
 def pay_user(sender_id, receiver_name, value):
     try:
+        value = int(value)
         sender_ref = db.collection("users").document(sender_id)
         receiver_ref = db.collection("users").document(
             _get_user_by_name(receiver_name).id
         )
-        transaction = db.transaction()
-        _pay_user(transaction, sender_ref, receiver_ref, value)
-
-        return "Transaction was successful."
+        return _pay_user(transaction, sender_ref, receiver_ref, value)
     except:
-        return "Transaction could not complete."
+        return "Invalid sender or receiver."
 
 
-# pay("exampleid", "hello", 1)
-# print(__daily_payout("idk2"))
-# register("id3", "bill")
-print(__payout("id34"))
+available_commands = {
+    "!register": {"action": register},
+    "!ubi": {"action": collect_ubi},
+    "!pay": {"action": pay_user},
+}
+
+# print(pay_user("id3", "william", 1))
+# register("id4", "william")
+# print(collect_ubi("id4"))
+print(handler("id5", "!pay william 26"))
+# handler("idk", "!test my command")
 

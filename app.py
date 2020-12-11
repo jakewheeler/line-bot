@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 
 import os
 import sys
-from argparse import ArgumentParser
 
 from flask import Flask, request, abort
 
@@ -16,6 +15,7 @@ from linebot.models import (
 
 #### bot code ####
 import bot
+import payments
 
 
 app = Flask(__name__)
@@ -59,9 +59,13 @@ def callback():
 # Handle text messages
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    print(event.source.user_id)
+    user_line_id = event.source.user_id
     chat_msg = event.message.text
+
+    # handle all normal bot commands
     should_respond, response = bot.handle_cmd(chat_msg)
+
+    # handle payments
 
     if should_respond:
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response))
