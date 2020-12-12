@@ -65,10 +65,14 @@ def handle_message(event):
     # handle all normal bot commands
     should_respond, response = bot.handle_cmd(chat_msg)
 
-    # handle payments
-
     if should_respond:
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response))
+
+    # handle payments
+    pay_should_respond, pay_resp = payments.handler(user_line_id, chat_msg)
+
+    if pay_should_respond:
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=pay_resp))
 
 
 if __name__ == "__main__":
