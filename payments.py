@@ -32,7 +32,7 @@ def _register_user(id, name):
     }
 
     db.collection("users").document(id).set(user)
-    return f"Thanks for registering at Lancaster Bank. {account_creation_bonus} Dosh Bucks have been added to your account."
+    return f"Thanks for creating an account with Lancaster Community Bank. {account_creation_bonus} DB (Dosh Bucks) have been added to your account for signing up."
 
 
 @firestore.transactional
@@ -136,12 +136,39 @@ def __payout(line_id):
         }
     )
 
-    return f"You have received {payout_value} Dosh Bucks."
+    return f"You have received {payout_value} DB. Spend it wisely."
 
 
 def __parse_chat_message(msg):
     split = msg.split(" ")
     return {"cmd": split[0], "args": split[1:]}
+
+
+def __fetch_all_members(id):
+    if id == "":
+        return "User must exist."
+
+    list_str = f""
+    users = db.collection("users").stream()
+    for user in users:
+        list_str += user.get("name") + "\n"
+    return list_str[:-1]
+
+
+def __check_balance(id):
+    user_snap = db.collection("users").document(id).get()
+    if user_snap == None:
+        return "User does not exist."
+    return f"You have {user_snap.get('money')} DB in your account."
+
+
+def __bank_help(id):
+    if id == "":
+        return "User must exist."
+    help_text = f""
+    for v in payment_cmd.values():
+        help_text += v["fmt"] + ": " + v["help_msg"] + "\n"
+    return help_text[:-1]  # remove \n from the end
 
 
 #### API ####
@@ -151,9 +178,9 @@ def handler(line_id, chat_message):
     parsed = __parse_chat_message(chat_message)
     user_cmd = parsed["cmd"]
     args = parsed["args"]
-    if user_cmd in available_commands:
+    if user_cmd in payment_cmd:
         try:
-            return True, available_commands[user_cmd]["action"](line_id, *args)
+            return True, payment_cmd[user_cmd]["action"](line_id, *args)
         except:
             return False, ""
 
@@ -163,12 +190,24 @@ def collect_ubi(line_id):
     return __payout(line_id)
 
 
+def bank_help(line_id):
+    return __bank_help(line_id)
+
+
 def register(line_id, name):
     if name == "":
         return "Name is required."
 
     status = _register_user(line_id, name)
     return status
+
+
+def get_members(line_id):
+    return __fetch_all_members(line_id)
+
+
+def check_balance(line_id):
+    return __check_balance(line_id)
 
 
 def pay_user(sender_id, receiver_name, value):
@@ -183,15 +222,42 @@ def pay_user(sender_id, receiver_name, value):
         return "Invalid sender or receiver."
 
 
-available_commands = {
-    "!register": {"action": register},
-    "!ubi": {"action": collect_ubi},
-    "!pay": {"action": pay_user},
+payment_cmd = {
+    "!register": {
+        "action": register,
+        "fmt": "!register [username]",
+        "help_msg": "Register an account with Lancaster Community Bank.",
+    },
+    "!members": {
+        "action": get_members,
+        "fmt": "!members",
+        "help_msg": "List members of LCB.",
+    },
+    "!ubi": {
+        "action": collect_ubi,
+        "fmt": "!ubi",
+        "help_msg": "Collect your UBI. You can do this once per day.",
+    },
+    "!balance": {
+        "action": check_balance,
+        "fmt": "!balance",
+        "help_msg": "Check your account balance.",
+    },
+    "!pay": {
+        "action": pay_user,
+        "fmt": "!pay [username] [amount]",
+        "help_msg": "Pay another LCB member.",
+    },
+    "!bankhelp": {
+        "action": bank_help,
+        "fmt": "!bankhelp",
+        "help_msg": "List all available bank commands.",
+    },
 }
 
 # print(pay_user("id3", "william", 1))
 # register("id4", "william")
 # print(collect_ubi("id4"))
-print(handler("id5", "!pay william 26"))
+print(handler("id5", "!bankhelp")[1])
 # handler("idk", "!test my command")
 
