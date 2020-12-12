@@ -287,7 +287,7 @@ cmd = {
 }
 
 
-def handleCmd(chat_msg):
+def handle_cmd(chat_msg):
     for key in cmd.keys():
         if key in chat_msg:
             args = chat_msg[len(key) + 1 :]
@@ -302,7 +302,7 @@ def handleCmd(chat_msg):
 
 
 if __name__ == "__main__":
-    test_text = "!covid 2020-04-12 2020-12-04"
+    test_text = "!cl"
 
     if ("!help") in test_text:
         print(get_help())

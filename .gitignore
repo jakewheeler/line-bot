@@ -3,3 +3,5 @@ LineBotPy.code-workspace
 .vscode
 /__pycache__/
 .env
+creds.json
+.DS_Store

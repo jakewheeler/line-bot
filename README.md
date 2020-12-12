@@ -33,7 +33,7 @@ Note that when deploying, your server will need to run the following script:
 
 If running on a Heroku Dyno, there is no need to modify the Procfile included in this repository.
 
-## Usage
+## Bot Commands
 
 - `!help` - Lists all available commands and how to use them
 - `!time` - Gets the current time in the Yamagata Prefecture in Japan
@@ -47,3 +47,12 @@ If running on a Heroku Dyno, there is no need to modify the Procfile included in
 - `!friday` - Adds Friday hype video to the chat (only works on Fridays)
 - `!cl` - Changelog command shows the latest 3 commits in the repository
 - `!covid [date range]` - Gets the difference in COVID-19 in Erie, PA cases and deaths between the date range provided
+
+## Payment Commands
+
+- `!bankhelp` - Lists all commands below
+- `!register [username]` - Register an account at the bank
+- `!members` - Lists all members of the bank
+- `!ubi` - Members can use this command to collect a paycheck once per day
+- `!balance` - Check your account balance
+- `!pay [username] [amount]` - Transfer a specified amount of money to another user
