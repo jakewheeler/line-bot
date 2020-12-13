@@ -48,6 +48,9 @@ def __register_user(id, name):
 
 @firestore.transactional
 def __pay_user(transaction, sender, receiver, value):
+    if value < 1:
+        return "Value must be 1 DB or more."
+
     send_snap = sender.get(transaction=transaction)
     rec_snap = receiver.get(transaction=transaction)
 
