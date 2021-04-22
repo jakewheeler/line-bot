@@ -13,8 +13,10 @@ To get started, you will need your own API keys from:
 - [BreweryDB](https://www.brewerydb.com/)
 - [fixer.io](https://fixer.io/)
 - [GitHub](https://github.com/)
+- [Firebase](https://firebase.google.com/)
+- [Lunch Money](https://lunchmoney.app/)
 
-All API keys can be had for free, although with some limitations.
+All API keys can be had for free (besides Lunch Money, which you should pay for!)
 
 ### Running Locally
 
@@ -47,6 +49,7 @@ If running on a Heroku Dyno, there is no need to modify the Procfile included in
 - `!friday` - Adds Friday hype video to the chat (only works on Fridays)
 - `!cl` - Changelog command shows the latest 3 commits in the repository
 - `!covid [date range]` - Gets the difference in COVID-19 in Erie, PA cases and deaths between the date range provided
+- `!coffeemoney` - Gets the total amount of money I've spent on coffee this month ☕️
 
 ## Payment Commands
 

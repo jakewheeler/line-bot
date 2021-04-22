@@ -23,6 +23,7 @@ WEATHER_API_KEY = os.getenv("APPID", None)
 CURRENCY_CONVERSION_KEY = os.getenv("CURRENCY_CONVERSION_KEY", None)
 BEER_API_KEY = os.getenv("BEER_API_KEY", None)
 GITHUB_API_KEY = os.getenv("GITHUB_API_KEY", None)
+LUNCHMONEY_API_KEY = os.getenv("LUNCHMONEY_API_KEY", None)
 
 # API URLs
 weather_api_url = f"https://api.openweathermap.org/data/2.5/weather?id=2110498&APPID={WEATHER_API_KEY}&units=imperial"
@@ -34,6 +35,27 @@ currency_conversion_api_url = (
 )
 
 changelog_api_url = "https://api.github.com/repos/jakewheeler/line-bot/commits"
+
+lunchmoney_api_url = (
+    f"https://dev.lunchmoney.app/v1/transactions?access_token={LUNCHMONEY_API_KEY}"
+)
+
+
+def money_spent_on_coffee_this_month():
+    category_url = "&category_id=183868"  # this is ☕️
+
+    start_date = datetime.datetime.today().date().replace(day=1)
+    end_date = datetime.datetime.now().date()
+    date_url = f"&start_date={start_date}&end_date={end_date}"
+    full_coffee_url = lunchmoney_api_url + date_url + category_url
+    response = requests.get(full_coffee_url)
+    if response.status_code == 200:
+        data = json.loads(response.content.decode("utf-8"))["transactions"]
+        prices_list = [float(transaction["amount"]) for transaction in data]
+        total = sum(prices_list)
+        return f"Since {start_date.strftime('%b %d %Y')}, he has spent ${total:.2f} on delicious coffee ☕️"
+    else:
+        return "Bad response from Lunch Money API 😞"
 
 
 def josh():
@@ -284,6 +306,12 @@ cmd = {
         "func": get_covid_cases,
         "detail": "Gets confirmed COVID-19 cases in Erie, PA as of today",
     },
+    "!coffeemoney": {
+        "syntax": "!coffeemoney",
+        "hasParams": False,
+        "func": money_spent_on_coffee_this_month,
+        "detail": "Gets the amount of money Jake spent on coffee so far this month ☕️",
+    },
 }
 
 
@@ -302,7 +330,7 @@ def handle_cmd(chat_msg):
 
 
 if __name__ == "__main__":
-    test_text = "!cl"
+    test_text = "!coffeemoney"
 
     if ("!help") in test_text:
         print(get_help())
