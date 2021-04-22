@@ -53,7 +53,7 @@ def money_spent_on_coffee_this_month():
         data = json.loads(response.content.decode("utf-8"))["transactions"]
         prices_list = [float(transaction["amount"]) for transaction in data]
         total = sum(prices_list)
-        return f"Since {start_date.strftime('%b %d %Y')}, he has spent ${total:.2f} on delicious coffee ☕️"
+        return f"Since {start_date.strftime('%b %d %Y')}, Jake has spent ${total:.2f} on delicious coffee ☕️"
     else:
         return "Bad response from Lunch Money API 😞"
 
