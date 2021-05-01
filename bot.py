@@ -50,10 +50,13 @@ def money_spent_on_coffee_this_month():
     full_coffee_url = lunchmoney_api_url + date_url + category_url
     response = requests.get(full_coffee_url)
     if response.status_code == 200:
-        data = json.loads(response.content.decode("utf-8"))["transactions"]
-        prices_list = [float(transaction["amount"]) for transaction in data]
-        total = sum(prices_list)
-        return f"Since {start_date.strftime('%b %d %Y')}, Jake has spent ${total:.2f} on delicious coffee ☕️"
+        try:
+            data = json.loads(response.content.decode("utf-8"))["transactions"]
+            prices_list = [float(transaction["amount"]) for transaction in data]
+            total = sum(prices_list)
+            return f"Since {start_date.strftime('%b %d %Y')}, Jake has spent ${total:.2f} on delicious coffee ☕️"
+        except:
+            return "No ☕️ data yet!"
     else:
         return "Bad response from Lunch Money API 😞"
 
