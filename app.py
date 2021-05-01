@@ -67,12 +67,14 @@ def handle_message(event):
 
     if should_respond:
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=response))
+        return
 
     # handle payments
     pay_should_respond, pay_resp = payments.handler(user_line_id, chat_msg)
 
     if pay_should_respond:
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=pay_resp))
+        return
 
 
 if __name__ == "__main__":
