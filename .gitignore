@@ -5,3 +5,5 @@ LineBotPy.code-workspace
 .env
 creds.json
 .DS_Store
+/node_modules
+/dist
