@@ -1,6 +1,11 @@
 import express from 'express';
 import { WebhookEvent, Client, middleware } from '@line/bot-sdk';
 import { env } from './env';
+import { executeAction } from './actions';
+
+const idk = executeAction('!coffeemoney my yargs yar');
+console.log(idk);
+process.exit();
 
 const PORT = 5000;
 
