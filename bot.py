@@ -182,7 +182,7 @@ def _is_friday():
 
 def get_friday_video():
     if _is_friday():
-        return "https://www.youtube.com/watch?v=S-CMaONmduM"
+        return "https://www.youtube.com/shorts/A40dWK-T6lM"
     return "Not Friday 😔"
 
 
