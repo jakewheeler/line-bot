@@ -323,27 +323,17 @@ def handle_cmd(chat_msg):
         if key in chat_msg:
             args = chat_msg[len(key) + 1 :]
             if args != None and args != "" and cmd[key]["hasParams"] == True:
-                return True, cmd[key]["func"](args)
+                return cmd[key]["func"](args)
             elif cmd[key]["hasParams"] == False:
-                return True, cmd[key]["func"]()
+                return cmd[key]["func"]()
             else:
-                return True, "Could not get command. Try !help."
+                return "Could not get command. Try !help."
 
-    return False, ""
+    return ""
 
 
 if __name__ == "__main__":
-    test_text = "!coffeemoney"
+    test_text = "!help"
 
-    if ("!help") in test_text:
-        print(get_help())
-    else:
-        for k in cmd.keys():
-            if k in test_text:
-                args = test_text[len(k) + 1 :]
-                if args != None and args != "" and cmd[k]["hasParams"] == True:
-                    print(cmd[k]["func"](args))
-                elif cmd[k]["hasParams"] == False:
-                    print(cmd[k]["func"]())
-                else:
-                    print("Could not get command. Try !help.")
+    test_resp = handle_cmd(test_text)
+    print(test_resp)
