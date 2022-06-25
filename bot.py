@@ -1,12 +1,9 @@
 import datetime
 import json
 import requests
-import math
-import random
 import pytz
 import os
 
-import osrs
 from randomEmoji import random_emoji
 
 # env variables
@@ -21,14 +18,11 @@ if ENV == "dev":
 # Access keys
 WEATHER_API_KEY = os.getenv("APPID", None)
 CURRENCY_CONVERSION_KEY = os.getenv("CURRENCY_CONVERSION_KEY", None)
-BEER_API_KEY = os.getenv("BEER_API_KEY", None)
 GITHUB_API_KEY = os.getenv("GITHUB_API_KEY", None)
 LUNCHMONEY_API_KEY = os.getenv("LUNCHMONEY_API_KEY", None)
 
 # API URLs
 weather_api_url = f"https://api.openweathermap.org/data/2.5/weather?id=2110498&APPID={WEATHER_API_KEY}&units=imperial"
-
-beer_api_url = f"https://sandbox-api.brewerydb.com/v2/beers/?key={BEER_API_KEY}"
 
 currency_conversion_api_url = (
     f"http://data.fixer.io/api/latest?access_key={CURRENCY_CONVERSION_KEY}"
@@ -130,20 +124,6 @@ def get_japan_weather_info():
         return "Weather API might be fucked up right now or command is incorrect. Try `!help`."
 
 
-def get_beer():
-    response = requests.get(beer_api_url)
-    if response.status_code == 200:
-        body = json.loads(response.content.decode("utf-8"))
-        random_beer_num = math.floor(random.randint(1, len(body["data"])))
-        random_beer = body["data"][random_beer_num]
-
-        beer = random_beer["name"]
-        abv = random_beer["abv"]
-        return f"Jesse is currently drinking a {beer} with an ABV of {abv}%"
-    else:
-        return "Beer API might be fucked up right now or command is incorrect. Try `!help`."
-
-
 def get_changelog():
     headers = {"Authorization": f"Bearer {GITHUB_API_KEY}"}
     response = requests.get(changelog_api_url, headers=headers).json()
@@ -186,18 +166,6 @@ cmd = {
         "func": get_japan_weather_info,
         "detail": "Get weather in Yonezawa",
     },
-    "!beer": {
-        "syntax": "!beer",
-        "hasParams": False,
-        "func": get_beer,
-        "detail": "Get random beer",
-    },
-    "!rs": {
-        "syntax": "!rs [item name]",
-        "hasParams": True,
-        "func": osrs.get_ge_price,
-        "detail": "Gets current price of specified item from the Grand Exchange",
-    },
     "!usdjpy": {
         "syntax": "!usdjpy [usd amt]",
         "hasParams": True,
@@ -220,7 +188,7 @@ cmd = {
         "syntax": "!friday",
         "hasParams": False,
         "func": get_friday_video,
-        "detail": "Its Friday 🤠",
+        "detail": "It's Friday 🤠",
     },
     "!cl": {
         "syntax": "!cl",
@@ -252,7 +220,7 @@ def handle_cmd(chat_msg):
 
 
 if __name__ == "__main__":
-    test_text = "!help"
+    test_text = "!friday"
 
     test_resp = handle_cmd(test_text)
     print(test_resp)
