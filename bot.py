@@ -98,14 +98,6 @@ def get_yen_to_usd(amt):
     return "JPY to USD might be fucked right now."
 
 
-def get_days_til_new_horizons():
-    release = datetime.datetime(2020, 3, 20)
-    today = datetime.datetime.now()
-    delta = release - today
-    days = str(delta).split(",", 1)[0]
-    return f"There are {days} until AC:NH is out."
-
-
 def get_japan_time():
     jp = datetime.datetime.now(tz=pytz.timezone("Asia/Tokyo"))
     jesse_date = jp.strftime("It is currently %b %d %Y at %I:%M:%S %p for Jesse.")
@@ -205,12 +197,6 @@ cmd = {
         "hasParams": True,
         "func": osrs.get_ge_price,
         "detail": "Gets current price of specified item from the Grand Exchange",
-    },
-    "!ac": {
-        "syntax": "!ac",
-        "hasParams": False,
-        "func": get_days_til_new_horizons,
-        "detail": "Gets number of days until Animal Crossing: New Horizons is available in the US",
     },
     "!usdjpy": {
         "syntax": "!usdjpy [usd amt]",
