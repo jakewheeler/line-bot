@@ -15,7 +15,6 @@ from linebot.models import (
 
 #### bot code ####
 import bot
-import payments
 
 
 app = Flask(__name__)
