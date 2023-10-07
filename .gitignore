@@ -5,3 +5,4 @@ LineBotPy.code-workspace
 .env
 creds.json
 .DS_Store
+virtEnv/*
