@@ -5,12 +5,22 @@ import sys
 
 from flask import Flask, request, abort
 
-from linebot import LineBotApi, WebhookHandler
-from linebot.exceptions import InvalidSignatureError
-from linebot.models import (
+from linebot.v3 import (
+    WebhookHandler
+)
+from linebot.v3.exceptions import (
+    InvalidSignatureError
+)
+from linebot.v3.messaging import (
+    Configuration,
+    ApiClient,
+    MessagingApi,
+    ReplyMessageRequest,
+    TextMessage
+)
+from linebot.v3.webhooks import (
     MessageEvent,
-    TextMessage,
-    TextSendMessage,
+    TextMessageContent
 )
 
 #### bot code ####
@@ -30,7 +40,7 @@ if channel_access_token is None:
     print("Specify LINE_CHANNEL_ACCESS_TOKEN as environment variable.")
     sys.exit(1)
 
-line_bot_api = LineBotApi(channel_access_token)
+configuration = Configuration(access_token=channel_access_token)
 handler = WebhookHandler(channel_secret)
 
 
@@ -56,23 +66,27 @@ def callback():
 
 
 # Handle text messages
-@handler.add(MessageEvent, message=TextMessage)
+@handler.add(MessageEvent, message=TextMessageContent)
 def handle_message(event):
     # user_line_id = event.source.user_id
     chat_msg = event.message.text
-
     # handle all normal bot commands
     response = bot.handle_cmd(chat_msg)
-    send_response(response, event.reply_token)
 
-
-def send_response(response, reply_token):
-    if response != "":
-        line_bot_api.reply_message(reply_token, TextSendMessage(text=response))
+    if response == "":
         return
+
+    with ApiClient(configuration) as api_client:
+        line_bot_api = MessagingApi(api_client)
+        line_bot_api.reply_message_with_http_info(
+            ReplyMessageRequest(
+                reply_token=event.reply_token,
+                messages=[TextMessage(text=response)]
+             )
+        )
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 8000))
     app.run(host="0.0.0.0", port=port)
 
